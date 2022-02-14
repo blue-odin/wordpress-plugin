@@ -122,6 +122,12 @@ final class BlueOdin {
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-public.php';
 
+		/**
+		 * The class responsible for tracking UTM parameters
+		 * of the plugin.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-utm-tracking.php';
+
 		$this->loader = new BlueOdinLoader();
 
 	}
@@ -169,12 +175,17 @@ final class BlueOdin {
 	private function define_public_hooks() {
 
 		$plugin_public = new BlueOdinPublic( $this->get_plugin_name(), $this->get_version() );
+		$plugin_utm_tracking = new BlueOdinUTMTracking();
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-	}
+		$this->loader->add_action('init', $plugin_utm_tracking, 'action_init');
+		$this->loader->add_action('wp', $plugin_utm_tracking, 'action_wp');
+		$this->loader->add_action('woocommerce_thankyou', $plugin_utm_tracking, 'action_woocommerce_thankyou');
+		$this->loader->add_filter('query_vars', $plugin_utm_tracking, 'filter_query_vars');
 
+	}
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
