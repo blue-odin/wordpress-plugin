@@ -32,7 +32,7 @@ final class BlueOdinUTMTracking {
 	 * @return array
 	 */
 	public function filter_query_vars( $vars ){
-		error_log("in query_vars function");
+		//error_log("in query_vars function");
 		foreach ($this->parameter_names as $parameter) {
 			$vars[] = $parameter;
 		}
@@ -68,13 +68,13 @@ final class BlueOdinUTMTracking {
 				$this->parameters[ $name ] = $value;
 			}
 		}
-		error_log($this->session_id);
+		//error_log($this->session_id);
 
 		$this->save_parameters();
 	}
 
 	function action_woocommerce_thankyou( $order_id ) {
-		error_log("in action_woocommerce_thankyou");
+		//error_log("in action_woocommerce_thankyou");
 		if ( ! $order_id ) {
 			return;
 		}
@@ -114,7 +114,7 @@ final class BlueOdinUTMTracking {
 	}
 
 	private function save_parameters() {
-		error_log("save_parameters " . print_r($this->parameters, true));
+		//error_log("save_parameters " . print_r($this->parameters, true));
 
 		global $wpdb;
 
@@ -127,13 +127,13 @@ final class BlueOdinUTMTracking {
 				$value,
 				$value
 			);
-			error_log($query);
+			//error_log($query);
 			$wpdb->query($query);
 		}
 	}
 
 	private function load_parameters() {
-		error_log("load_parameters " . print_r($this->parameters, true));
+		//error_log("load_parameters " . print_r($this->parameters, true));
 
 		global $wpdb;
 
