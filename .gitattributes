@@ -1,0 +1,4 @@
+.idea export-ignore
+.idea/* export-ignore
+package.sh export-ignore
+.gitignore export-ignore
