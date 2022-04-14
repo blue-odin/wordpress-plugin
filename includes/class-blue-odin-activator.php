@@ -46,7 +46,7 @@ class BlueOdinActivator {
                     session_id tinytext NOT NULL,
                     name tinytext NOT NULL,
                     value text NOT NULL,
-                    PRIMARY KEY  (id)
+                    PRIMARY KEY  (id),
                     UNIQUE KEY utm_data_name_session (name(50), session_id(50))
                 ) $charset_collate;";
 
