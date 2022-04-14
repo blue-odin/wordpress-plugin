@@ -121,7 +121,7 @@ final class BlueOdinUTMTracking {
 		foreach ($this->parameters as $name => $value) {
 
 			$query = $wpdb->prepare(
-				"INSERT INTO {$wpdb->prefix}bo_utm_data( session_id, name, value ) VALUES ( %s, %s, %s ) ON DUPLICATE KEY UPDATE value=%s",
+				"INSERT INTO {$wpdb->prefix}bo_utm_data(time, session_id, name, value ) VALUES (now(), %s, %s, %s ) ON DUPLICATE KEY UPDATE value=%s",
 				$this->session_id,
 				$name,
 				$value,
