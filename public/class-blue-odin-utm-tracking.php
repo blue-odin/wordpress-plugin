@@ -2,7 +2,7 @@
 
 final class BlueOdinUTMTracking {
 
-	const SESSION_ID_COOKIE_NAME = 'bo_session';
+	const SESSION_ID_COOKIE_NAME = 'wordpress_bo_session';
 	const BO_THANKYOU_ACTION_DONE = '_bo_thankyou_action_done';
 	private $parameter_names = [
 		'utm_campaign',
