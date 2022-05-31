@@ -20,6 +20,8 @@
  * @subpackage BlueOdin/includes
  * @author     Your Name <email@example.com>
  */
+require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+
 class BlueOdinActivator {
 	const DB_VERSION = "1.0";
 
@@ -36,9 +38,23 @@ class BlueOdinActivator {
 
 	private function create_database () {
 		global $wpdb;
-
-		$table_name = $wpdb->prefix . "bo_utm_data";
 		$charset_collate = $wpdb->get_charset_collate();
+
+		self::create_bo_utm_data( $wpdb, $charset_collate );
+		self::create_bo_carts($wpdb, $charset_collate);
+		self::create_bo_cart_items($wpdb, $charset_collate);
+
+		add_option( "bo_db_version", self::DB_VERSION );
+	}
+
+	/**
+	 * @param wpdb $wpdb
+	 * @param $charset_collate
+	 *
+	 * @return void
+	 */
+	private function create_bo_utm_data( wpdb $wpdb, $charset_collate ) {
+		$table_name = $wpdb->prefix . "bo_utm_data";
 
 		$sql = "CREATE TABLE $table_name (
                     id mediumint(9) NOT NULL AUTO_INCREMENT,
@@ -50,10 +66,53 @@ class BlueOdinActivator {
                     UNIQUE KEY utm_data_name_session (name(50), session_id(50))
                 ) $charset_collate;";
 
-		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 		dbDelta( $sql );
+	}
 
-		add_option( "bo_db_version", self::DB_VERSION );
+	/**
+	 * @param wpdb $wpdb
+	 * @param $charset_collate
+	 *
+	 * @return void
+	 */
+	private function create_bo_carts( wpdb $wpdb, $charset_collate ) {
+		$table_name = $wpdb->prefix . "bo_carts";
+		$unique_key_session_id = $wpdb->prefix . 'cart_session_id';
+
+		$sql = "CREATE TABLE $table_name (
+                    id mediumint(9) NOT NULL AUTO_INCREMENT,
+                    time datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,
+                    session_id tinytext NOT NULL,
+                    user_id mediumint(11),
+                    ip_address tinytext NOT NULL,
+                    PRIMARY KEY  (id),
+                    UNIQUE KEY $unique_key_session_id (session_id(50))
+                ) $charset_collate;";
+
+		dbDelta( $sql );
+	}
+
+	/**
+	 * @param wpdb $wpdb
+	 * @param $charset_collate
+	 *
+	 * @return void
+	 */
+	private function create_bo_cart_items( wpdb $wpdb, $charset_collate ) {
+		$table_name = $wpdb->prefix . "bo_cart_items";
+		$unique_key_cart_id_item_key = $wpdb->prefix . 'cart_items_cart_id_item_key';
+
+		$sql = "CREATE TABLE $table_name (
+                    id mediumint(9) NOT NULL AUTO_INCREMENT,
+                    cart_id mediumint(9) NOT NULL,
+                    item_key varchar(32) NOT NULL,
+                    product_id mediumint(9) NOT NULL,
+                    quantity smallint NOT NULL,
+                    PRIMARY KEY  (id),
+                   UNIQUE KEY $unique_key_cart_id_item_key (cart_id, item_key)
+                ) $charset_collate;";
+
+		dbDelta( $sql );
 	}
 
 

@@ -2,7 +2,6 @@
 
 final class BlueOdinUTMTracking {
 
-	const SESSION_ID_COOKIE_NAME = 'wordpress_bo_session';
 	const BO_THANKYOU_ACTION_DONE = '_bo_thankyou_action_done';
 	private $parameter_names = [
 		'utm_campaign',
@@ -17,13 +16,17 @@ final class BlueOdinUTMTracking {
 	 * @var array<string,string> $parameters
 	 */
 	private $parameters = [];
+
 	/**
-	 * @var string $session_id
+	 * @var BlueOdinSession
 	 */
-	private $session_id;
+	private $session;
 
-	public function __construct() {
-
+	/**
+	 * @param BlueOdinSession $session
+	 */
+	public function __construct($session) {
+		$this->session = $session;
 	}
 
 	/**
@@ -45,7 +48,7 @@ final class BlueOdinUTMTracking {
 			return;
 		}
 
-		$this->get_session_id();
+		$this->session->get_session_id();
 	}
 
 
@@ -99,19 +102,7 @@ final class BlueOdinUTMTracking {
 	}
 
 
-	private function get_session_id() {
 
-		// TODO: validate is a uuid
-		if(isset($_COOKIE[ self::SESSION_ID_COOKIE_NAME ])) {
-			$this->session_id = $_COOKIE[ self::SESSION_ID_COOKIE_NAME ];
-			return;
-		}
-
-		$domain = parse_url(home_url())['host'];
-
-		$this->session_id = wp_generate_uuid4();
-		setcookie( self::SESSION_ID_COOKIE_NAME, $this->session_id, time() + 31556926,  '/', $domain);
-	}
 
 	private function save_parameters() {
 		//error_log("save_parameters " . print_r($this->parameters, true));
@@ -122,7 +113,7 @@ final class BlueOdinUTMTracking {
 
 			$query = $wpdb->prepare(
 				"INSERT INTO {$wpdb->prefix}bo_utm_data(time, session_id, name, value ) VALUES (now(), %s, %s, %s ) ON DUPLICATE KEY UPDATE value=%s",
-				$this->session_id,
+				$this->session->get_session_id(),
 				$name,
 				$value,
 				$value
@@ -139,7 +130,7 @@ final class BlueOdinUTMTracking {
 
 		$query = $wpdb->prepare(
 			"SELECT name, value FROM {$wpdb->prefix}bo_utm_data WHERE session_id=%s ",
-			$this->session_id
+			$this->session->get_session_id()
 		);
 		$results = $wpdb->get_results($query);
 		foreach ($results as $result) {

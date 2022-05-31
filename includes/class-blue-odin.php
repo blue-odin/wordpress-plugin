@@ -123,10 +123,25 @@ final class BlueOdin {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-public.php';
 
 		/**
+		 * The class responsible for handling the session
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-session.php';
+
+		/**
 		 * The class responsible for tracking UTM parameters
 		 * of the plugin.
 		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-utm-tracking.php';
+
+		/**
+		 * The class responsible for tracking additions to the cart
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-abandoned-cart.php';
+
+		/**
+		 * The class responsible for processing the webhook for carts
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-cart-webhook.php';
 
 		$this->loader = new BlueOdinLoader();
 
@@ -175,16 +190,25 @@ final class BlueOdin {
 	private function define_public_hooks() {
 
 		$plugin_public = new BlueOdinPublic( $this->get_plugin_name(), $this->get_version() );
-		$plugin_utm_tracking = new BlueOdinUTMTracking();
+		$session = new BlueOdinSession();
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
+		$plugin_utm_tracking = new BlueOdinUTMTracking($session);
 		$this->loader->add_action('init', $plugin_utm_tracking, 'action_init');
 		$this->loader->add_action('wp', $plugin_utm_tracking, 'action_wp');
 		$this->loader->add_action('woocommerce_thankyou', $plugin_utm_tracking, 'action_woocommerce_thankyou');
 		$this->loader->add_filter('query_vars', $plugin_utm_tracking, 'filter_query_vars');
 
+		$plugin_abandoned_cart = new BlueOdinAbandonedCart($session);
+		$this->loader->add_action('woocommerce_add_to_cart', $plugin_abandoned_cart, 'action_woocommerce_add_to_cart', 10, 6);
+		$this->loader->add_action('woocommerce_cart_item_removed', $plugin_abandoned_cart, 'action_woocommerce_cart_item_removed', 10, 2);
+		$this->loader->add_action('woocommerce_cart_item_restored', $plugin_abandoned_cart, 'action_woocommerce_cart_item_restored', 10, 2);
+		$this->loader->add_action('woocommerce_cart_emptied', $plugin_abandoned_cart, 'action_woocommerce_cart_emptied');
+		$this->loader->add_action('woocommerce_cart_item_set_quantity', $plugin_abandoned_cart, 'action_woocommerce_cart_item_set_quantity', 10, 3);
+
+		$plugin_webhook = new BlueOdinCartWebhook($this->loader);
 	}
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.

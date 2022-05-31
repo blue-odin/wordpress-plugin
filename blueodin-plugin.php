@@ -49,6 +49,8 @@ register_deactivation_hook( __FILE__, 'deactivate_blue_odin' );
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-blue-odin.php';
 
+require plugin_dir_path( __FILE__ ) . 'includes/functions.php';
+
 /**
  * Begins execution of the plugin.
  *
