@@ -36,14 +36,14 @@ final class BlueOdinCartItem {
 		$this->quantity   = $quantity;
 	}
 
-	public static function fromWC_Cart( array $item ): BlueOdinCartItem
+	public static function fromWC_Cart( array $wc_item ): BlueOdinCartItem
 	{
 		$item               = new BlueOdinCartItem(
-			$item['key'],
-			$item['product_id'],
-			$item['quantity']
+			$wc_item['key'],
+			$wc_item['product_id'],
+			$wc_item['quantity']
 		);
-		$item->wc_cart_item = $item;
+		$item->wc_cart_item = $wc_item;
 
 		return $item;
 	}
