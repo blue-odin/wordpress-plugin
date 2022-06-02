@@ -99,6 +99,9 @@ final class BlueOdin {
 	 */
 	private function load_dependencies() {
 
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/BlueOdinCart.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/BlueOdinCartItem.php';
+
 		/**
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
