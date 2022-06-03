@@ -34,7 +34,9 @@ final class BlueOdinSession {
 		$domain = parse_url( home_url() )['host'];
 
 		$this->session_id = wp_generate_uuid4();
-		setcookie( self::SESSION_ID_COOKIE_NAME, $this->session_id, time() + 31556926, '/', $domain );
+		if (!headers_sent()) {
+			setcookie( self::SESSION_ID_COOKIE_NAME, $this->session_id, time() + 31556926, '/', $domain );
+		}
 
 		return $this->session_id;
 	}
