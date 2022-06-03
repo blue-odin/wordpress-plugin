@@ -1,5 +1,7 @@
 <?php
 
+namespace BlueOdin\WordPress;
+
 /**
  * Fired during plugin deactivation
  *

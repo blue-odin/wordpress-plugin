@@ -1,5 +1,10 @@
 <?php
 
+namespace BlueOdin\WordPress;
+
+use BlueOdin\WordPress\Models\BlueOdinCart;
+use WC_Cart;
+
 final class BlueOdinAbandonedCart {
 
 	/**

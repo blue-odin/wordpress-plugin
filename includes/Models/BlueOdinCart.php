@@ -1,9 +1,15 @@
 <?php
 
+namespace BlueOdin\WordPress\Models;
+
+use BlueOdin\WordPress\BlueOdinSession;
+use WC_Cart;
+use WC_Geolocation;
+
 final class BlueOdinCart {
 
 	/**
-	 * @var int
+	 * @var int|null
 	 */
 	private $id;
 	/**
@@ -15,7 +21,7 @@ final class BlueOdinCart {
 	 */
 	private $status = 'in-process';
 	/**
-	 * @var WC_Cart
+	 * @var WC_Cart|null
 	 */
 	private $wc_cart;
 	/**

@@ -1,5 +1,9 @@
 <?php
 
+namespace BlueOdin\WordPress\Models;
+
+use function BlueOdin\WordPress\blueodin_write_log;
+
 final class BlueOdinCartItem {
 
 	/**

@@ -1,5 +1,7 @@
 <?php
 
+namespace BlueOdin\WordPress;
+
 final class BlueOdinSession {
 
 	const SESSION_ID_COOKIE_NAME = 'wordpress_bo_session';

@@ -1,0 +1,8 @@
+{
+  "autoload": {
+    "psr-4": {
+      "BlueOdin\\WordPress\\": ["includes", "public"],
+      "BlueOdin\\WordPress\\Admin\\": "admin"
+    }
+  }
+}

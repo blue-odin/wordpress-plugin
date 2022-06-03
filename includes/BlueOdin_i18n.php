@@ -1,5 +1,7 @@
 <?php
 
+namespace BlueOdin\WordPress;
+
 /**
  * Define the internationalization functionality
  *

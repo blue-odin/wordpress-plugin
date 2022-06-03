@@ -1,5 +1,9 @@
 <?php
 
+namespace BlueOdin\WordPress;
+
+use WP;
+
 final class BlueOdinUTMTracking {
 
 	const BO_THANKYOU_ACTION_DONE = '_bo_thankyou_action_done';
@@ -25,7 +29,7 @@ final class BlueOdinUTMTracking {
 	/**
 	 * @param BlueOdinSession $session
 	 */
-	public function __construct($session) {
+	public function __construct( BlueOdinSession $session) {
 		$this->session = $session;
 	}
 
@@ -34,7 +38,8 @@ final class BlueOdinUTMTracking {
 	 *
 	 * @return array
 	 */
-	public function filter_query_vars( $vars ){
+	public function filter_query_vars( array $vars ): array
+	{
 		//error_log("in query_vars function");
 		foreach ($this->parameter_names as $parameter) {
 			$vars[] = $parameter;
@@ -43,7 +48,7 @@ final class BlueOdinUTMTracking {
 		return $vars;
 	}
 
-	function action_init() {
+	function action_init(): void {
 		if (is_404()) {
 			return;
 		}
@@ -57,7 +62,7 @@ final class BlueOdinUTMTracking {
 	 *
 	 * @return void
 	 */
-	public function action_wp($wp) {
+	public function action_wp( WP $wp): void {
 		if (is_404()) {
 			return;
 		}
@@ -76,7 +81,7 @@ final class BlueOdinUTMTracking {
 		$this->save_parameters();
 	}
 
-	function action_woocommerce_thankyou( $order_id ) {
+	function action_woocommerce_thankyou(int $order_id ): void {
 		//error_log("in action_woocommerce_thankyou");
 		if ( ! $order_id ) {
 			return;
@@ -104,7 +109,7 @@ final class BlueOdinUTMTracking {
 
 
 
-	private function save_parameters() {
+	private function save_parameters(): void {
 		//error_log("save_parameters " . print_r($this->parameters, true));
 
 		global $wpdb;
@@ -123,7 +128,7 @@ final class BlueOdinUTMTracking {
 		}
 	}
 
-	private function load_parameters() {
+	private function load_parameters(): void {
 		//error_log("load_parameters " . print_r($this->parameters, true));
 
 		global $wpdb;

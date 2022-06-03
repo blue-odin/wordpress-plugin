@@ -1,5 +1,9 @@
 <?php
 
+namespace BlueOdin\WordPress;
+
+use BlueOdin\WordPress\Admin\BlueOdinAdmin;
+
 /**
  * The file that defines the core plugin class
  *
@@ -35,9 +39,9 @@ final class BlueOdin {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      BlueOdinLoader    $loader    Maintains and registers all hooks for the plugin.
+	 * @var      BlueOdinLoader|null $loader Maintains and registers all hooks for the plugin.
 	 */
-	protected $loader;
+	private $loader;
 
 	/**
 	 * The unique identifier of this plugin.
@@ -46,7 +50,7 @@ final class BlueOdin {
 	 * @access   protected
 	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
 	 */
-	protected $plugin_name;
+	private $plugin_name;
 
 	/**
 	 * The current version of the plugin.
@@ -55,7 +59,7 @@ final class BlueOdin {
 	 * @access   protected
 	 * @var      string    $version    The current version of the plugin.
 	 */
-	protected $version;
+	private $version;
 
 	/**
 	 * Define the core functionality of the plugin.
@@ -97,57 +101,8 @@ final class BlueOdin {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies() {
-
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/BlueOdinCart.php';
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/models/BlueOdinCartItem.php';
-
-		/**
-		 * The class responsible for orchestrating the actions and filters of the
-		 * core plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-blue-odin-loader.php';
-
-		/**
-		 * The class responsible for defining internationalization functionality
-		 * of the plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-blue-odin-i18n.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the admin area.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-blue-odin-admin.php';
-
-		/**
-		 * The class responsible for defining all actions that occur in the public-facing
-		 * side of the site.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-public.php';
-
-		/**
-		 * The class responsible for handling the session
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-session.php';
-
-		/**
-		 * The class responsible for tracking UTM parameters
-		 * of the plugin.
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-utm-tracking.php';
-
-		/**
-		 * The class responsible for tracking additions to the cart
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-abandoned-cart.php';
-
-		/**
-		 * The class responsible for processing the webhook for carts
-		 */
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-blue-odin-cart-webhook.php';
-
-		$this->loader = new BlueOdinLoader();
-
+	private function load_dependencies(): void {
+		$this->loader = new \BlueOdin\WordPress\BlueOdinLoader();
 	}
 
 	/**
@@ -159,7 +114,7 @@ final class BlueOdin {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale() {
+	private function set_locale(): void {
 
 		$plugin_i18n = new BlueOdin_i18n();
 
@@ -174,7 +129,7 @@ final class BlueOdin {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks() {
+	private function define_admin_hooks(): void {
 
 		$plugin_admin = new BlueOdinAdmin( $this->get_plugin_name(), $this->get_version() );
 
@@ -190,7 +145,7 @@ final class BlueOdin {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_public_hooks() {
+	private function define_public_hooks(): void {
 
 		$plugin_public = new BlueOdinPublic( $this->get_plugin_name(), $this->get_version() );
 		$session = new BlueOdinSession();
@@ -218,7 +173,7 @@ final class BlueOdin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function run() {
+	public function run(): void {
 		$this->loader->run();
 	}
 
@@ -229,7 +184,7 @@ final class BlueOdin {
 	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
 	 */
-	public function get_plugin_name() {
+	public function get_plugin_name(): string {
 		return $this->plugin_name;
 	}
 
@@ -239,7 +194,7 @@ final class BlueOdin {
 	 * @since     1.0.0
 	 * @return    BlueOdinLoader    Orchestrates the hooks of the plugin.
 	 */
-	public function get_loader() {
+	public function get_loader(): BlueOdinLoader {
 		return $this->loader;
 	}
 
@@ -249,7 +204,7 @@ final class BlueOdin {
 	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
 	 */
-	public function get_version() {
+	public function get_version(): string {
 		return $this->version;
 	}
 

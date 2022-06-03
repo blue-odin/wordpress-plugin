@@ -10,7 +10,19 @@ Author URI: http://www.blueodin.io
 License: A "Slug" license name e.g. GPL2
 */
 
+require_once dirname(__FILE__)."/vendor/autoload.php";
+
+/**
+ * The core plugin class that is used to define internationalization,
+ * admin-specific hooks, and public-facing site hooks.
+ */
+use BlueOdin\WordPress\BlueOdin;
+use BlueOdin\WordPress\BlueOdinActivator;
+use BlueOdin\WordPress\BlueOdinDeactivator;
+
 // If this file is called directly, abort.
+
+
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
@@ -24,10 +36,8 @@ const BLUE_ODIN_VERSION = '1.0.0';
 
 /**
  * The code that runs during plugin activation.
- * This action is documented in includes/class-plugin-name-activator.php
  */
 function activate_blue_odin() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-blue-odin-activator.php';
 	BlueOdinActivator::activate();
 }
 
@@ -36,18 +46,11 @@ function activate_blue_odin() {
  * This action is documented in includes/class-plugin-name-deactivator.php
  */
 function deactivate_blue_odin() {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/class-blue-odin-deactivator.php';
 	BlueOdinDeactivator::deactivate();
 }
 
 register_activation_hook( __FILE__, 'activate_blue_odin' );
 register_deactivation_hook( __FILE__, 'deactivate_blue_odin' );
-
-/**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
- */
-require plugin_dir_path( __FILE__ ) . 'includes/class-blue-odin.php';
 
 require plugin_dir_path( __FILE__ ) . 'includes/functions.php';
 
@@ -61,9 +64,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/functions.php';
  * @since    1.0.0
  */
 function run_blue_odin() {
-
 	$plugin = new BlueOdin();
 	$plugin->run();
-
 }
 run_blue_odin();
