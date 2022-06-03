@@ -33,6 +33,8 @@ final class BlueOdinAbandonedCart {
 		array $variation,
 		array $cart_item_data ): void
 	{
+		$wc_cart = WC()->cart;
+
 		blueodin_write_log("in action_woocommerce_add_to_cart function", [
 			'cart_item_key' => $cart_item_key,
 			'product_id' => $product_id,
@@ -40,9 +42,12 @@ final class BlueOdinAbandonedCart {
 			'variation_id' => $variation_id,
 			'variation' => $variation,
 			'cart_item_data' => $cart_item_data,
+			'cart' => $wc_cart,
 		]);
 
-		$cart = BlueOdinCart::fromAddedItem($this->session, $cart_item_key, $product_id, $quantity );
+		$cart = is_null($wc_cart)
+			? BlueOdinCart::fromAddedItem($this->session, $cart_item_key, $product_id, $quantity )
+			: BlueOdinCart::fromWC_Cart($wc_cart, $this->session);;
 
 		$cart->save_to_db();
 		$cart->push_to_blueodin();
