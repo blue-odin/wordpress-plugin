@@ -22,7 +22,7 @@ namespace BlueOdin\WordPress;
  * @subpackage BlueOdin/includes
  * @author     Your Name <email@example.com>
  */
-class BlueOdinDeactivator {
+final class BlueOdinDeactivator {
 
 	/**
 	 * Short Description. (use period)
@@ -31,7 +31,7 @@ class BlueOdinDeactivator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function deactivate() {
+	public static function deactivate(): void {
 
 	}
 

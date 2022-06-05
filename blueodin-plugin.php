@@ -1,13 +1,17 @@
 <?php
 
 /*
-Plugin Name: Blueodin Plugin
-Plugin URI: https://www.blueodin.io/plugin
-Description: Plugin to add extra functionality to BlueOdin.
-Version: 1.0
-Author: Blue Odin
-Author URI: http://www.blueodin.io
-License: A "Slug" license name e.g. GPL2
+ * Plugin Name: Blueodin Plugin
+ * Plugin URI: https://www.blueodin.io/plugin
+ * Description: Plugin to add extra functionality to BlueOdin.
+ * Version: 1.0
+ * Requires at least: 5.2
+ * Requires PHP:      7.2
+ * Author: Blue Odin
+ * Author URI: http://www.blueodin.io
+ * License: A "Slug" license name e.g. GPL2
+ * WC requires at least: 3.0.0
+ * WC tested up to: 6.5.1
 */
 
 require_once dirname(__FILE__)."/vendor/autoload.php";

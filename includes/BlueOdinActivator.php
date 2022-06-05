@@ -1,6 +1,8 @@
 <?php
 namespace BlueOdin\WordPress;
 
+use wpdb;
+
 /**
  * Fired during plugin activation
  *
@@ -23,7 +25,7 @@ namespace BlueOdin\WordPress;
  */
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-class BlueOdinActivator {
+final class BlueOdinActivator {
 	const DB_VERSION = "1.0";
 
 	/**
@@ -33,11 +35,11 @@ class BlueOdinActivator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function activate() {
+	public static function activate(): void {
 		self::create_database();
 	}
 
-	private function create_database () {
+	private static function create_database (): void {
 		global $wpdb;
 		$charset_collate = $wpdb->get_charset_collate();
 
@@ -50,11 +52,11 @@ class BlueOdinActivator {
 
 	/**
 	 * @param wpdb $wpdb
-	 * @param $charset_collate
+	 * @param string $charset_collate
 	 *
 	 * @return void
 	 */
-	private function create_bo_utm_data( wpdb $wpdb, $charset_collate ) {
+	private static function create_bo_utm_data( wpdb $wpdb, string  $charset_collate ): void {
 		$table_name = $wpdb->prefix . "bo_utm_data";
 
 		$sql = "CREATE TABLE $table_name (
@@ -76,7 +78,7 @@ class BlueOdinActivator {
 	 *
 	 * @return void
 	 */
-	private function create_bo_carts( wpdb $wpdb, $charset_collate ) {
+	private static function create_bo_carts( wpdb $wpdb, $charset_collate ): void {
 		$table_name = $wpdb->prefix . "bo_carts";
 		$unique_key_session_id = $wpdb->prefix . 'cart_session_id';
 
@@ -99,7 +101,7 @@ class BlueOdinActivator {
 	 *
 	 * @return void
 	 */
-	private function create_bo_cart_items( wpdb $wpdb, $charset_collate ) {
+	private static function create_bo_cart_items( wpdb $wpdb, $charset_collate ): void {
 		$table_name = $wpdb->prefix . "bo_cart_items";
 		$unique_key_cart_id_item_key = $wpdb->prefix . 'cart_items_cart_id_item_key';
 

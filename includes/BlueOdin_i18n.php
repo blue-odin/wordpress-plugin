@@ -26,7 +26,7 @@ namespace BlueOdin\WordPress;
  * @subpackage BlueOdin/includes
  * @author     Your Name <email@example.com>
  */
-class BlueOdin_i18n {
+final class BlueOdin_i18n {
 
 
 	/**
@@ -34,7 +34,7 @@ class BlueOdin_i18n {
 	 *
 	 * @since    1.0.0
 	 */
-	public function load_plugin_textdomain() {
+	public function load_plugin_textdomain(): void {
 
 		load_plugin_textdomain(
 			'blueodin',

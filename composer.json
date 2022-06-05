@@ -4,5 +4,8 @@
       "BlueOdin\\WordPress\\": ["includes", "public"],
       "BlueOdin\\WordPress\\Admin\\": "admin"
     }
+  },
+  "require": {
+    "ext-json": "*"
   }
 }

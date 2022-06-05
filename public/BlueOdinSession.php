@@ -13,7 +13,7 @@ final class BlueOdinSession {
 	/**
 	 * @return string
 	 */
-	public function get_session_id() {
+	public function get_session_id(): string {
 
 		if(!is_null($this->session_id)) {
 			return $this->session_id;
@@ -30,7 +30,7 @@ final class BlueOdinSession {
 	/**
 	 * @return mixed|string|null
 	 */
-	private function create_new_session() {
+	private function create_new_session(): string {
 		$domain = parse_url( home_url() )['host'];
 
 		$this->session_id = wp_generate_uuid4();
@@ -45,7 +45,7 @@ final class BlueOdinSession {
 	 * @return mixed|string|null
 	 */
 	// TODO: validate is a uuid
-	private function load_session_from_cookie() {
+	private function load_session_from_cookie(): string {
 		$this->session_id = $_COOKIE[ self::SESSION_ID_COOKIE_NAME ];
 
 		return $this->session_id;
