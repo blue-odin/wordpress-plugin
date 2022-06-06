@@ -159,14 +159,8 @@ final class BlueOdin {
 		$this->loader->add_action('woocommerce_thankyou', $plugin_utm_tracking, 'action_woocommerce_thankyou');
 		$this->loader->add_filter('query_vars', $plugin_utm_tracking, 'filter_query_vars');
 
-		$plugin_abandoned_cart = new BlueOdinAbandonedCart($session);
-		$this->loader->add_action('woocommerce_add_to_cart', $plugin_abandoned_cart, 'action_woocommerce_add_to_cart', 10, 6);
-		$this->loader->add_action('woocommerce_cart_item_removed', $plugin_abandoned_cart, 'action_woocommerce_cart_item_removed', 10, 2);
-		$this->loader->add_action('woocommerce_cart_item_restored', $plugin_abandoned_cart, 'action_woocommerce_cart_item_restored', 10, 2);
-		$this->loader->add_action('woocommerce_cart_emptied', $plugin_abandoned_cart, 'action_woocommerce_cart_emptied');
-		$this->loader->add_action('woocommerce_cart_item_set_quantity', $plugin_abandoned_cart, 'action_woocommerce_cart_item_set_quantity', 10, 3);
-
-		$plugin_webhook = new BlueOdinCartWebhook($this->loader);
+		BlueOdinAbandonedCart::load($this->loader, $session);
+		BlueOdinCartWebhook::load($this->loader);
 	}
 	/**
 	 * Run the loader to execute all of the hooks with WordPress.

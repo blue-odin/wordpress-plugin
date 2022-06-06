@@ -29,6 +29,12 @@ final class BlueOdinCart {
 	 */
 	private $session;
 
+
+	/**
+	 * @var \WC_Order|null
+	 */
+	private $order;
+
 	/**
 	 * @param BlueOdinSession $session
 	 */
@@ -68,13 +74,16 @@ final class BlueOdinCart {
 		$user_id    = get_current_user_id();
 		$ip_address = WC_Geolocation::get_ip_address();
 		$session_id = $this->session->get_session_id();
+		$order_id = $this->order ? $this->order->get_id() : null;
 		$query      = $wpdb->prepare(
-			"INSERT INTO {$wpdb->prefix}bo_carts(time, session_id, user_id, ip_address ) VALUES (now(), %s, %s, %s ) ON DUPLICATE KEY UPDATE user_id=%s, ip_address = %s, time = now()",
+			"INSERT INTO {$wpdb->prefix}bo_carts(time, session_id, user_id, ip_address, order_id ) VALUES (now(), %s, %s, %s, %d ) ON DUPLICATE KEY UPDATE user_id=%s, ip_address = %s, time = now(), order_id = %s",
 			$session_id,
 			$user_id,
 			$ip_address,
+			$order_id,
 			$user_id,
-			$ip_address
+			$ip_address,
+			$order_id
 		);
 		//blueodin_write_log('save_cart_to_database', $query);
 		$wpdb->query( $query );
@@ -126,21 +135,24 @@ final class BlueOdinCart {
 
 	private function toArray(): array
 	{
+		$this->wc_cart->calculate_totals();
+
 		$items = [];
 		foreach ( $this->items as $item ) {
 			$items[] = $item->toArray();
 		}
 
 		return [
+			'wc_cart'          => $this->wc_cart,
 			'id'               => $this->id,
 			'session_id'       => $this->session->get_session_id(),
-			'email_address'    => 'unknown',
-			'customer_details' => 'guest',
-			'order_total'      => 12.34,
+			'customer_details' => $this->getCustomerDetails(),
+			'order_total'      => $this->wc_cart->get_total('notview'),
 			'coupons'          => [],
 			'captured_by'      => 'unknown',
 			'cart_status'      => $this->status,
 			'items'            => $items,
+			'order_id'         => $this->order ? $this->order->get_id() : null,
 		];
 	}
 
@@ -148,5 +160,26 @@ final class BlueOdinCart {
 	{
 		$item->setCart( $this );
 		$this->items[] = $item;
+	}
+
+	private function getCustomerDetails(): array
+	{
+		if ($this->wc_cart->get_customer()->get_email() !== null) {
+			return [
+				'email_address' => $this->wc_cart->get_customer()->get_email(),
+				'source' => 'logged_in_user'
+			];
+		}
+
+		return [
+			'email_address' => 'unknown',
+			'source' => 'unknown',
+		];
+	}
+
+	public function setOrder( \WC_Order $order )
+	{
+		$this->order = $order;
+		$this->status = 'ordered';
 	}
 }

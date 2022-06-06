@@ -5,14 +5,18 @@ namespace BlueOdin\WordPress;
 final class BlueOdinCartWebhook {
 	/**
 	 * @param BlueOdinLoader $loader
+	 *
+	 * @return BlueOdinCartWebhook
 	 */
-	public function __construct(BlueOdinLoader $loader) {
-		$loader->add_filter( 'woocommerce_webhook_topic_hooks', $this, 'filter_woocommerce_webhook_topic_hooks' );
-		$loader->add_filter( 'woocommerce_valid_webhook_resources', $this, 'filter_woocommerce_valid_webhook_resources' );
-		$loader->add_filter( 'woocommerce_webhook_topics', $this, 'filter_woocommerce_webhook_topics' );
-		$loader->add_filter( 'woocommerce_webhook_payload', $this, 'filter_woocommerce_webhook_payload' , 10, 4 );
+	static public function load(BlueOdinLoader $loader): self {
+		$module = new BlueOdinCartWebhook();
+		$loader->add_filter( 'woocommerce_webhook_topic_hooks', $module, 'filter_woocommerce_webhook_topic_hooks' );
+		$loader->add_filter( 'woocommerce_valid_webhook_resources', $module, 'filter_woocommerce_valid_webhook_resources' );
+		$loader->add_filter( 'woocommerce_webhook_topics', $module, 'filter_woocommerce_webhook_topics' );
+		$loader->add_filter( 'woocommerce_webhook_payload', $module, 'filter_woocommerce_webhook_payload' , 10, 4 );
 
 		blueodin_DANGEROUS_disable_https_from_urls();
+		return $module;
 	}
 
 	/**

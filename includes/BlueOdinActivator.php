@@ -88,6 +88,7 @@ final class BlueOdinActivator {
                     session_id tinytext NOT NULL,
                     user_id mediumint(11),
                     ip_address tinytext NOT NULL,
+                    order_id mediumint(11),
                     PRIMARY KEY  (id),
                     UNIQUE KEY $unique_key_session_id (session_id(50))
                 ) $charset_collate;";
