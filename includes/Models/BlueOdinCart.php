@@ -64,6 +64,7 @@ final class BlueOdinCart {
 	{
 		$cart = new BlueOdinCart( $session );
 		$cart->addItem( new BlueOdinCartItem( $key, $product_id, $quantity ) );
+
 		return $cart;
 	}
 
@@ -73,13 +74,13 @@ final class BlueOdinCart {
 		global $wpdb;
 		$user_id    = get_current_user_id();
 		$ip_address = WC_Geolocation::get_ip_address();
-		$order_id = $this->order ? $this->order->get_id() : null;
-		$wpdb->update($wpdb->prefix . "bo_carts",
+		$order_id   = $this->order ? $this->order->get_id() : null;
+		$wpdb->update( $wpdb->prefix . "bo_carts",
 			[
-				'time' => wp_date(DATE_ATOM),
-				'user_id' => $user_id,
+				'time'       => wp_date( DATE_ATOM ),
+				'user_id'    => $user_id,
 				'ip_address' => $ip_address,
-				'order_id' => $order_id
+				'order_id'   => $order_id
 			],
 			[
 				'id' => $this->cart_id(),
@@ -108,7 +109,8 @@ final class BlueOdinCart {
 		}
 
 		$this->id = $this->insert();
-		$this->session->set_current_cart_id($this->id);
+		$this->session->set_current_cart_id( $this->id );
+
 		return $this->id;
 
 	}
@@ -147,7 +149,7 @@ final class BlueOdinCart {
 			'id'               => $this->id,
 			'session_id'       => $this->session->get_session_id(),
 			'customer_details' => $this->getCustomerDetails(),
-			'order_total'      => $this->wc_cart->get_total('notview'),
+			'order_total'      => $this->wc_cart->get_total( 'notview' ),
 			'coupons'          => [],
 			'captured_by'      => 'unknown',
 			'cart_status'      => $this->status,
@@ -164,22 +166,23 @@ final class BlueOdinCart {
 
 	private function getCustomerDetails(): array
 	{
-		if ($this->wc_cart->get_customer()->get_email() !== null) {
+		if ( $this->wc_cart->get_customer()->get_email() !== null ) {
 			return [
 				'email_address' => $this->wc_cart->get_customer()->get_email(),
-				'source' => 'logged_in_user'
+				'source'        => 'logged_in_user',
+				'customer_id'   => $this->wc_cart->get_customer()->get_id(),
 			];
 		}
 
 		return [
 			'email_address' => 'unknown',
-			'source' => 'unknown',
+			'source'        => 'unknown',
 		];
 	}
 
-	public function setOrder( \WC_Order $order )
+	public function setOrder( \WC_Order $order ): void
 	{
-		$this->order = $order;
+		$this->order  = $order;
 		$this->status = 'ordered';
 	}
 
@@ -189,15 +192,16 @@ final class BlueOdinCart {
 		$user_id    = get_current_user_id();
 		$ip_address = WC_Geolocation::get_ip_address();
 		$session_id = $this->session->get_session_id();
-		$wpdb->insert($wpdb->prefix . 'bo_carts',
+		$wpdb->insert( $wpdb->prefix . 'bo_carts',
 			[
-				'time' =>  wp_date(DATE_ATOM),
+				'time'       => wp_date( DATE_ATOM ),
 				'session_id' => $session_id,
-				'user_id' => $user_id,
+				'user_id'    => $user_id,
 				'ip_address' => $ip_address,
 			]
 
 		);
+
 		return $this->id = $wpdb->insert_id;
 	}
 }
