@@ -72,7 +72,7 @@ final class BlueOdinAbandonedCart {
 			? BlueOdinCart::fromAddedItem( $this->session, $cart_item_key, $product_id, $quantity )
 			: BlueOdinCart::fromWC_Cart( $wc_cart, $this->session );;
 
-		$cart->save_to_db();
+		$cart->update();
 		$cart->push_to_blueodin();
 	}
 
@@ -90,7 +90,7 @@ final class BlueOdinAbandonedCart {
 		] );
 		$cart = BlueOdinCart::fromWC_Cart( $wc_cart, $this->session );
 
-		$cart->save_to_db();
+		$cart->update();
 		$cart->push_to_blueodin();
 
 	}
@@ -109,7 +109,7 @@ final class BlueOdinAbandonedCart {
 		] );
 		$cart = BlueOdinCart::fromWC_Cart( $wc_cart, $this->session );
 
-		$cart->save_to_db();
+		$cart->update();
 		$cart->push_to_blueodin();
 	}
 
@@ -123,6 +123,8 @@ final class BlueOdinAbandonedCart {
 		blueodin_write_log( "in action_woocommerce_cart_emptied function", [
 			'clear_persistent_cart' => $clear_persistent_cart,
 		] );
+
+		$this->session->set_current_cart_id(null);
 	}
 
 	/**
@@ -141,7 +143,7 @@ final class BlueOdinAbandonedCart {
 		] );
 		$cart = BlueOdinCart::fromWC_Cart( $wc_cart, $this->session );
 
-		$cart->save_to_db();
+		$cart->update();
 		$cart->push_to_blueodin();
 
 	}
@@ -164,7 +166,7 @@ final class BlueOdinAbandonedCart {
 		$cart = BlueOdinCart::fromWC_Cart( $wc_cart, $this->session );;
 		$cart->setOrder($order);
 
-		$cart->save_to_db();
+		$cart->update();
 		$cart->push_to_blueodin();
 
 	}

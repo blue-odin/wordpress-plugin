@@ -33,6 +33,17 @@ final class BlueOdinUTMTracking {
 		$this->session = $session;
 	}
 
+	public static function load( BlueOdinLoader $loader, BlueOdinSession $session ): self
+	{
+		$utm_tracking = new BlueOdinUTMTracking($session);
+		$loader->add_action('wp', $utm_tracking, 'action_wp');
+		$loader->add_action('woocommerce_thankyou', $utm_tracking, 'action_woocommerce_thankyou');
+		$loader->add_filter('query_vars', $utm_tracking, 'filter_query_vars');
+		return $utm_tracking;
+	}
+
+
+
 	/**
 	 * @param array $vars
 	 *
@@ -48,13 +59,7 @@ final class BlueOdinUTMTracking {
 		return $vars;
 	}
 
-	function action_init(): void {
-		if (is_404()) {
-			return;
-		}
 
-		$this->session->get_session_id();
-	}
 
 
 	/**

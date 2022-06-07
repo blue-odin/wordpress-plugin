@@ -77,7 +77,7 @@ final class BlueOdinCartWebhook {
      * @since 8.7.0
      */
     public function filter_woocommerce_webhook_payload(array $payload, string $resource, array $resource_data, int $id ): array {
-	    blueodin_write_log('filter_woocommerce_webhook_payload', ['payload' => $payload, 'resource' => $resource, 'resource_data' => $resource_data, 'id' => $id]);
+	    //blueodin_write_log('filter_woocommerce_webhook_payload', ['payload' => $payload, 'resource' => $resource, 'resource_data' => $resource_data, 'id' => $id]);
 
 		if ($resource !== 'bo_cart') {
 			return $payload;

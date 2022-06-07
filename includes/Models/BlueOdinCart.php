@@ -68,25 +68,24 @@ final class BlueOdinCart {
 	}
 
 
-	public function save_to_db(): void
+	public function update(): void
 	{
 		global $wpdb;
 		$user_id    = get_current_user_id();
 		$ip_address = WC_Geolocation::get_ip_address();
-		$session_id = $this->session->get_session_id();
 		$order_id = $this->order ? $this->order->get_id() : null;
-		$query      = $wpdb->prepare(
-			"INSERT INTO {$wpdb->prefix}bo_carts(time, session_id, user_id, ip_address, order_id ) VALUES (now(), %s, %s, %s, %d ) ON DUPLICATE KEY UPDATE user_id=%s, ip_address = %s, time = now(), order_id = %s",
-			$session_id,
-			$user_id,
-			$ip_address,
-			$order_id,
-			$user_id,
-			$ip_address,
-			$order_id
+		$wpdb->update($wpdb->prefix . "bo_carts",
+			[
+				'time' => wp_date(DATE_ATOM),
+				'user_id' => $user_id,
+				'ip_address' => $ip_address,
+				'order_id' => $order_id
+			],
+			[
+				'id' => $this->cart_id(),
+			]
+
 		);
-		//blueodin_write_log('save_cart_to_database', $query);
-		$wpdb->query( $query );
 
 		$wpdb->delete( $wpdb->prefix . 'bo_cart_items', [ 'cart_id' => $this->cart_id() ] );
 		foreach ( $this->items as $item ) {
@@ -103,14 +102,15 @@ final class BlueOdinCart {
 			return $this->id;
 		}
 
-		global $wpdb;
-		$query    = $wpdb->prepare(
-			"SELECT id FROM {$wpdb->prefix}bo_carts WHERE session_id=%s ",
-			$this->session->get_session_id()
-		);
-		$this->id = $wpdb->get_var( $query );
+		$this->id = $this->session->get_current_cart_id();
+		if ( ! is_null( $this->id ) ) {
+			return $this->id;
+		}
 
+		$this->id = $this->insert();
+		$this->session->set_current_cart_id($this->id);
 		return $this->id;
+
 	}
 
 	/**
@@ -181,5 +181,23 @@ final class BlueOdinCart {
 	{
 		$this->order = $order;
 		$this->status = 'ordered';
+	}
+
+	private function insert(): int
+	{
+		global $wpdb;
+		$user_id    = get_current_user_id();
+		$ip_address = WC_Geolocation::get_ip_address();
+		$session_id = $this->session->get_session_id();
+		$wpdb->insert($wpdb->prefix . 'bo_carts',
+			[
+				'time' =>  wp_date(DATE_ATOM),
+				'session_id' => $session_id,
+				'user_id' => $user_id,
+				'ip_address' => $ip_address,
+			]
+
+		);
+		return $this->id = $wpdb->insert_id;
 	}
 }
