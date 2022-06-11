@@ -14,15 +14,3 @@ if ( ! function_exists('blueodin_write_log')) {
       }
    }
 }
-
-// Do not use this method unless you're doing development
-if ( ! function_exists( 'blueodin_DANGEROUS_disable_https_from_urls' )) {
-	function blueodin_DANGEROUS_disable_https_from_urls()
-	{
-		add_filter( 'http_request_args', function ( $args ) {
-			$args['reject_unsafe_urls'] = false;
-
-			return $args;
-		} );
-	}
-}
