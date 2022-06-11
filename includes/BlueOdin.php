@@ -48,7 +48,7 @@ final class BlueOdin {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $plugin_name    The string used to uniquely identify this plugin.
+	 * @var      string $plugin_name The string used to uniquely identify this plugin.
 	 */
 	private $plugin_name;
 
@@ -57,7 +57,7 @@ final class BlueOdin {
 	 *
 	 * @since    1.0.0
 	 * @access   protected
-	 * @var      string    $version    The current version of the plugin.
+	 * @var      string $version The current version of the plugin.
 	 */
 	private $version;
 
@@ -70,7 +70,8 @@ final class BlueOdin {
 	 *
 	 * @since    1.0.0
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		if ( defined( 'BLUE_ODIN_VERSION' ) ) {
 			$this->version = BLUE_ODIN_VERSION;
 		} else {
@@ -101,8 +102,9 @@ final class BlueOdin {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function load_dependencies(): void {
-		$this->loader = new \BlueOdin\WordPress\BlueOdinLoader();
+	private function load_dependencies(): void
+	{
+		$this->loader = new BlueOdinLoader();
 	}
 
 	/**
@@ -114,7 +116,8 @@ final class BlueOdin {
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function set_locale(): void {
+	private function set_locale(): void
+	{
 
 		$plugin_i18n = new BlueOdin_i18n();
 
@@ -123,13 +126,14 @@ final class BlueOdin {
 	}
 
 	/**
-	 * Register all of the hooks related to the admin area functionality
+	 * Register all the hooks related to the admin area functionality
 	 * of the plugin.
 	 *
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_admin_hooks(): void {
+	private function define_admin_hooks(): void
+	{
 
 		$plugin_admin = new BlueOdinAdmin( $this->get_plugin_name(), $this->get_version() );
 
@@ -139,31 +143,36 @@ final class BlueOdin {
 	}
 
 	/**
-	 * Register all of the hooks related to the public-facing functionality
+	 * Register all the hooks related to the public-facing functionality
 	 * of the plugin.
 	 *
 	 * @since    1.0.0
 	 * @access   private
 	 */
-	private function define_public_hooks(): void {
+	private function define_public_hooks(): void
+	{
 
 		$plugin_public = new BlueOdinPublic( $this->get_plugin_name(), $this->get_version() );
 
-		$session = BlueOdinSession::load($this->loader);
+		$session = BlueOdinSession::load( $this->loader );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
-		BlueOdinUTMTracking::load($this->loader, $session);
-		BlueOdinAbandonedCart::load($this->loader, $session);
-		BlueOdinCartWebhook::load($this->loader);
+		VersionRestRoute::load( $this->loader, $this->get_version() );
+
+		BlueOdinUTMTracking::load( $this->loader, $session );
+		BlueOdinAbandonedCart::load( $this->loader, $session );
+		BlueOdinCartWebhook::load( $this->loader );
 	}
+
 	/**
-	 * Run the loader to execute all of the hooks with WordPress.
+	 * Run the loader to execute all the hooks with WordPress.
 	 *
 	 * @since    1.0.0
 	 */
-	public function run(): void {
+	public function run(): void
+	{
 		$this->loader->run();
 	}
 
@@ -171,30 +180,33 @@ final class BlueOdin {
 	 * The name of the plugin used to uniquely identify it within the context of
 	 * WordPress and to define internationalization functionality.
 	 *
-	 * @since     1.0.0
 	 * @return    string    The name of the plugin.
+	 * @since     1.0.0
 	 */
-	public function get_plugin_name(): string {
+	public function get_plugin_name(): string
+	{
 		return $this->plugin_name;
 	}
 
 	/**
 	 * The reference to the class that orchestrates the hooks with the plugin.
 	 *
-	 * @since     1.0.0
 	 * @return    BlueOdinLoader    Orchestrates the hooks of the plugin.
+	 * @since     1.0.0
 	 */
-	public function get_loader(): BlueOdinLoader {
+	public function get_loader(): BlueOdinLoader
+	{
 		return $this->loader;
 	}
 
 	/**
 	 * Retrieve the version number of the plugin.
 	 *
-	 * @since     1.0.0
 	 * @return    string    The version number of the plugin.
+	 * @since     1.0.0
 	 */
-	public function get_version(): string {
+	public function get_version(): string
+	{
 		return $this->version;
 	}
 
