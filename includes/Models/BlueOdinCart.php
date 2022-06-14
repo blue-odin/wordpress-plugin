@@ -166,9 +166,25 @@ final class BlueOdinCart {
 
 	private function getCustomerDetails(): array
 	{
-		if ( $this->wc_cart->get_customer()->get_email() !== null ) {
+		if ($this->order && $this->order->get_user()) {
 			return [
-				'email_address' => $this->wc_cart->get_customer()->get_email(),
+				'email_address' => $this->order->get_user()->user_email,
+				'source'        => 'order',
+				'customer_id'   => $this->order->get_user()->ID,
+			];
+		}
+
+		if ($this->order) {
+			return [
+				'email_address' => $this->order->get_billing_email(),
+				'source'        => 'order',
+			];
+		}
+
+		$cart_customer_email = $this->wc_cart->get_customer()->get_email();
+		if ( $cart_customer_email !== null && $cart_customer_email !== '' ) {
+			return [
+				'email_address' => $cart_customer_email,
 				'source'        => 'logged_in_user',
 				'customer_id'   => $this->wc_cart->get_customer()->get_id(),
 			];
