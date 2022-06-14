@@ -57,16 +57,16 @@ final class BlueOdinAbandonedCart {
 
 		$wc_cart = WC()->cart;
 
-		blueodin_write_log( "in action_woocommerce_add_to_cart function", [
-			'wc_session_cookie' => $wc_session_cookie,
-			'cart_item_key'  => $cart_item_key,
-			'product_id'     => $product_id,
-			'quantity'       => $quantity,
-			'variation_id'   => $variation_id,
-			'variation'      => $variation,
-			'cart_item_data' => $cart_item_data,
-			'cart'           => $wc_cart,
-		] );
+		//blueodin_write_log( "in action_woocommerce_add_to_cart function", [
+		//	'wc_session_cookie' => $wc_session_cookie,
+		//	'cart_item_key'  => $cart_item_key,
+		//	'product_id'     => $product_id,
+		//	'quantity'       => $quantity,
+		//	'variation_id'   => $variation_id,
+		//	'variation'      => $variation,
+		//	'cart_item_data' => $cart_item_data,
+		//	'cart'           => $wc_cart,
+		//] );
 
 		$cart = is_null( $wc_cart )
 			? BlueOdinCart::fromAddedItem( $this->session, $cart_item_key, $product_id, $quantity )
@@ -84,10 +84,10 @@ final class BlueOdinAbandonedCart {
 	 */
 	public function action_woocommerce_cart_item_removed( string $cart_item_key, WC_Cart $wc_cart ): void
 	{
-		blueodin_write_log( "in action_woocommerce_cart_item_removed function", [
-			'cart_item_key' => $cart_item_key,
-			'cart'          => $wc_cart,
-		] );
+		//blueodin_write_log( "in action_woocommerce_cart_item_removed function", [
+		//	'cart_item_key' => $cart_item_key,
+		//	'cart'          => $wc_cart,
+		//] );
 		$cart = BlueOdinCart::fromWC_Cart( $wc_cart, $this->session );
 
 		$cart->update();
@@ -103,10 +103,10 @@ final class BlueOdinAbandonedCart {
 	 */
 	public function action_woocommerce_cart_item_restored( string $cart_item_key, WC_Cart $wc_cart ): void
 	{
-		blueodin_write_log( "in action_woocommerce_cart_item_restored function", [
-			'cart_item_key' => $cart_item_key,
-			'cart'          => $wc_cart,
-		] );
+		//blueodin_write_log( "in action_woocommerce_cart_item_restored function", [
+		//	'cart_item_key' => $cart_item_key,
+		//	'cart'          => $wc_cart,
+		//] );
 		$cart = BlueOdinCart::fromWC_Cart( $wc_cart, $this->session );
 
 		$cart->update();
@@ -120,9 +120,9 @@ final class BlueOdinAbandonedCart {
 	 */
 	public function action_woocommerce_cart_emptied( bool $clear_persistent_cart ): void
 	{
-		blueodin_write_log( "in action_woocommerce_cart_emptied function", [
-			'clear_persistent_cart' => $clear_persistent_cart,
-		] );
+		//blueodin_write_log( "in action_woocommerce_cart_emptied function", [
+		//	'clear_persistent_cart' => $clear_persistent_cart,
+		//] );
 
 		$this->session->set_current_cart_id(null);
 	}
@@ -136,11 +136,11 @@ final class BlueOdinAbandonedCart {
 	 */
 	public function action_woocommerce_cart_item_set_quantity( string $cart_item_key, int $quantity, WC_Cart $wc_cart ): void
 	{
-		blueodin_write_log( "in action_woocommerce_cart_item_set_quantity function", [
-			'cart_item_key' => $cart_item_key,
-			'quantity'      => $quantity,
-			'cart'          => $wc_cart,
-		] );
+		//blueodin_write_log( "in action_woocommerce_cart_item_set_quantity function", [
+		//	'cart_item_key' => $cart_item_key,
+		//	'quantity'      => $quantity,
+		//	'cart'          => $wc_cart,
+		//] );
 		$cart = BlueOdinCart::fromWC_Cart( $wc_cart, $this->session );
 
 		$cart->update();
@@ -152,12 +152,11 @@ final class BlueOdinAbandonedCart {
 	{
 		$wc_cart = WC()->cart;
 
-		blueodin_write_log( "in action_woocommerce_new_order function", [
-			'cart'     => $wc_cart,
-			'order_id' => $order_id,
-			'order'    => $order,
-
-		] );
+		//blueodin_write_log( "in action_woocommerce_new_order function", [
+		//	'cart'     => $wc_cart,
+		//	'order_id' => $order_id,
+		//	'order'    => $order,
+		//] );
 
 		if (is_null( $wc_cart )) {
 			return;
@@ -165,6 +164,8 @@ final class BlueOdinAbandonedCart {
 
 		$cart = BlueOdinCart::fromWC_Cart( $wc_cart, $this->session );;
 		$cart->setOrder($order);
+
+		$this->session->set_email($order->get_billing_email(), 'order');
 
 		$cart->update();
 		$cart->push_to_blueodin();

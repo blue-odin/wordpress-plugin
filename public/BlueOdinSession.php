@@ -117,15 +117,49 @@ final class BlueOdinSession {
 		//blueodin_write_log( "BlueOdinSession::set_current_cart_id", [ 'rows_updated' => $rows ] );
 	}
 
+	public function set_email( string $email, string $source ): void
+	{
+		//blueodin_write_log( "BlueOdinSession::set_email", [
+		//	'session_id' => $this->session_id,
+		//	'email'      => $email,
+		//	'source'     => $source,
+		//] );
+		global $wpdb;
+
+		$rows = $wpdb->update(
+			$wpdb->prefix . 'bo_sessions',
+			[
+				'email'        => $email,
+				'email_source' => $source,
+				'last_seen'    => wp_date( DATE_ATOM ),
+			], [
+			'session_id' => $this->session_id,
+		] );
+
+		//blueodin_write_log( "BlueOdinSession::set_email", [ 'rows_updated' => $rows ] );
+	}
+
 	public function get_current_cart_id(): ?int
 	{
 		//blueodin_write_log( "BlueOdinSession::get_current_cart_id", [ 'session_id' => $this->session_id ] );
 		global $wpdb;
 		$sql = $wpdb->prepare( "SELECT current_cart_id FROM {$wpdb->prefix}bo_sessions WHERE session_id = %s", $this->session_id );
 		$id  = $wpdb->get_var( $sql );
+
 		//blueodin_write_log( "BlueOdinSession::get_current_cart_id", [ 'return' => $id ] );
 
 		return $id;
+	}
+
+	public function get_email(): ?object
+	{
+		//blueodin_write_log( "BlueOdinSession::get_email", [ 'session_id' => $this->session_id ] );
+		global $wpdb;
+		$sql  = $wpdb->prepare( "SELECT email, email_source as source FROM {$wpdb->prefix}bo_sessions WHERE session_id = %s", $this->session_id );
+		$data = $wpdb->get_row( $sql );
+		//blueodin_write_log( "BlueOdinSession::get_email", [ 'return' => $data ] );
+
+		return $data;
 	}
 
 	private function touch(): void

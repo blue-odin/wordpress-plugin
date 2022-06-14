@@ -160,7 +160,7 @@ final class BlueOdin {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 
 		VersionRestRoute::load( $this->loader, $this->get_version() );
-
+		DetectEmailAddresses::load($this->loader, $session);
 		BlueOdinUTMTracking::load( $this->loader, $session );
 		BlueOdinAbandonedCart::load( $this->loader, $session );
 		BlueOdinCartWebhook::load( $this->loader );

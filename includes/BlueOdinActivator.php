@@ -135,6 +135,8 @@ final class BlueOdinActivator {
                     last_seen datetime DEFAULT now(),
                     session_id char(36) NOT NULL,
 				    current_cart_id mediumint,
+				    email varchar(255),
+				    email_source varchar(255),
                     PRIMARY KEY  (id),
                    UNIQUE KEY $unique_key_session_id (session_id)
                 ) $charset_collate;";

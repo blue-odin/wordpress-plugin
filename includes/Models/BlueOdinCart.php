@@ -166,7 +166,7 @@ final class BlueOdinCart {
 
 	private function getCustomerDetails(): array
 	{
-		if ($this->order && $this->order->get_user()) {
+		if ( $this->order && $this->order->get_user() ) {
 			return [
 				'email_address' => $this->order->get_user()->user_email,
 				'source'        => 'order',
@@ -174,7 +174,7 @@ final class BlueOdinCart {
 			];
 		}
 
-		if ($this->order) {
+		if ( $this->order ) {
 			return [
 				'email_address' => $this->order->get_billing_email(),
 				'source'        => 'order',
@@ -187,6 +187,14 @@ final class BlueOdinCart {
 				'email_address' => $cart_customer_email,
 				'source'        => 'logged_in_user',
 				'customer_id'   => $this->wc_cart->get_customer()->get_id(),
+			];
+		}
+
+		$session_email = $this->session->get_email();
+		if ( $session_email && $session_email->email ) {
+			return [
+				'email_address' => $session_email->email,
+				'source'        => $session_email->source,
 			];
 		}
 

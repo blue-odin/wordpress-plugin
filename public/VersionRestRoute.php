@@ -57,13 +57,15 @@ final class VersionRestRoute {
 	public function action_rest_api_init(): void
 	{
 		register_rest_route( 'blueodin/v1', '/version', [
-			'methods'  => 'GET',
-			'callback' => [$this, 'handle_get_version'],
+			'methods'             => 'GET',
+			'callback'            => [ $this, 'handle_get_version' ],
+			'permission_callback' => '__return_true',
 		] );
 
 	}
 
-	public function handle_get_version(): void {
+	public function handle_get_version(): void
+	{
 		$data = [
 			'version' => $this->version,
 		];

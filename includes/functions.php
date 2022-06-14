@@ -14,3 +14,17 @@ if ( ! function_exists('blueodin_write_log')) {
       }
    }
 }
+
+if (!function_exists('str_contains')) {
+	if (function_exists('mb_strpos')) {
+		function str_contains( $haystack, $needle )
+		{
+			return $needle !== '' && mb_strpos( $haystack, $needle ) !== false;
+		}
+	} else {
+		function str_contains( $haystack, $needle )
+		{
+			return $needle !== '' && strpos( $haystack, $needle ) !== false;
+		}
+	}
+}
