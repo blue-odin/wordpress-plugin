@@ -4,7 +4,7 @@ namespace BlueOdin\WordPress;
 
 use WP;
 
-final class DetectEmailAddresses {
+final class CaptureEmailFromParameters {
 
 	/**
 	 * @var BlueOdinSession
@@ -21,7 +21,7 @@ final class DetectEmailAddresses {
 
 	public static function load( BlueOdinLoader $loader, BlueOdinSession $session ): self
 	{
-		$detect_email_addresses = new DetectEmailAddresses( $session );
+		$detect_email_addresses = new CaptureEmailFromParameters( $session );
 		$loader->add_action( 'wp', $detect_email_addresses, 'action_wp' );
 
 		return $detect_email_addresses;

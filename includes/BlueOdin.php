@@ -32,6 +32,8 @@ use BlueOdin\WordPress\Admin\BlueOdinAdmin;
  * @author     Your Name <email@example.com>
  */
 final class BlueOdin {
+	const NONCE_VALUE = 'blueodin_nonce_value';
+
 
 	/**
 	 * The loader that's responsible for maintaining and registering all hooks that power
@@ -152,15 +154,11 @@ final class BlueOdin {
 	private function define_public_hooks(): void
 	{
 
-		$plugin_public = new BlueOdinPublic( $this->get_plugin_name(), $this->get_version() );
-
 		$session = BlueOdinSession::load( $this->loader );
 
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-
 		VersionRestRoute::load( $this->loader, $this->get_version() );
-		DetectEmailAddresses::load($this->loader, $session);
+		CaptureEmailFromParameters::load($this->loader, $session);
+		CaptureEmailFromCheckoutForm::load($this->loader, $session, $this->get_version());
 		BlueOdinUTMTracking::load( $this->loader, $session );
 		BlueOdinAbandonedCart::load( $this->loader, $session );
 		BlueOdinCartWebhook::load( $this->loader );
