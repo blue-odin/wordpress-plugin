@@ -3,6 +3,7 @@
 namespace BlueOdin\WordPress;
 
 use BlueOdin\WordPress\Models\BlueOdinCart;
+use WC_Checkout;
 
 final class CaptureEmailFromCheckoutForm {
 	const BLUEODIN_CHECKOUT_SCRIPT = 'blueodin_checkout';
@@ -27,8 +28,7 @@ final class CaptureEmailFromCheckoutForm {
 	{
 		$detect_email_addresses = new CaptureEmailFromCheckoutForm( $session, $version );
 		$loader->add_action( 'wp_ajax_blueodin_capture_email', $detect_email_addresses, 'action_wp_ajax_blueodin_capture_email' );
-		//$loader->add_action( 'woocommerce_before_checkout_form', $detect_email_addresses, 'filter_woocommerce_before_checkout_form' );
-		$loader->add_action( 'woocommerce_checkout_init', $detect_email_addresses, 'filter_woocommerce_before_checkout_form' );
+		$loader->add_action( 'woocommerce_checkout_init', $detect_email_addresses, 'action_woocommerce_checkout_init' );
 
 		return $detect_email_addresses;
 	}
@@ -53,7 +53,7 @@ final class CaptureEmailFromCheckoutForm {
 		wp_die();
 	}
 
-	public function filter_woocommerce_before_checkout_form($checkout): void
+	public function action_woocommerce_checkout_init( WC_Checkout $checkout ): void
 	{
 		wp_enqueue_script( self::BLUEODIN_CHECKOUT_SCRIPT, plugins_url( '../assets/js/', __FILE__ ) . 'blueodin-checkout.js', array( 'jquery' ), $this->version, false );
 		$data = [

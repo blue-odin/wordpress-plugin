@@ -181,15 +181,6 @@ final class BlueOdinCart {
 			];
 		}
 
-		$cart_customer_email = $this->wc_cart->get_customer()->get_email();
-		if ( $cart_customer_email !== null && $cart_customer_email !== '' ) {
-			return [
-				'email_address' => $cart_customer_email,
-				'source'        => 'logged_in_user',
-				'customer_id'   => $this->wc_cart->get_customer()->get_id(),
-			];
-		}
-
 		$session_email = $this->session->get_email();
 		if ( $session_email && $session_email->email ) {
 			return [

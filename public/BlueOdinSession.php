@@ -10,6 +10,12 @@ final class BlueOdinSession {
 	 */
 	private $session_id;
 
+	private $email;
+
+	private $email_source;
+
+	private $loaded = false;
+
 	public static function load( BlueOdinLoader $loader ): self
 	{
 		$session = new BlueOdinSession();
@@ -126,6 +132,12 @@ final class BlueOdinSession {
 		//] );
 		global $wpdb;
 
+		$this->get_email();
+
+		if ( ! $this->should_update_email( $email, $source ) ) {
+			return;
+		}
+
 		$rows = $wpdb->update(
 			$wpdb->prefix . 'bo_sessions',
 			[
@@ -135,6 +147,10 @@ final class BlueOdinSession {
 			], [
 			'session_id' => $this->session_id,
 		] );
+
+		$this->email        = $email;
+		$this->email_source = $source;
+		$this->loaded       = true;
 
 		//blueodin_write_log( "BlueOdinSession::set_email", [ 'rows_updated' => $rows ] );
 	}
@@ -153,11 +169,22 @@ final class BlueOdinSession {
 
 	public function get_email(): ?object
 	{
+		if ( $this->loaded ) {
+			return (object) [
+				'email'  => $this->email,
+				'source' => $this->email_source,
+			];
+		}
+
 		//blueodin_write_log( "BlueOdinSession::get_email", [ 'session_id' => $this->session_id ] );
 		global $wpdb;
 		$sql  = $wpdb->prepare( "SELECT email, email_source as source FROM {$wpdb->prefix}bo_sessions WHERE session_id = %s", $this->session_id );
 		$data = $wpdb->get_row( $sql );
 		//blueodin_write_log( "BlueOdinSession::get_email", [ 'return' => $data ] );
+
+		$this->email        = $data->email;
+		$this->email_source = $data->source;
+		$this->loaded       = true;
 
 		return $data;
 	}
@@ -176,6 +203,33 @@ final class BlueOdinSession {
 			]
 		);
 		//blueodin_write_log( "BlueOdinSession::touch", [ 'rows_updated' => $rows ] );
+	}
+
+	private function should_update_email( string $new_email, string $new_source ): bool
+	{
+		if ( is_null( $this->email ) ) {
+			return true;
+		}
+
+		if ( $new_email === $this->email && $new_source === $this->email_source ) {
+			return false;
+		}
+
+		// Key is the current source. Values is a list of sources that cannot override it
+		$cannot_override = [
+			'order'          => [ 'logged_in_user', 'form_submit', 'blueodin_email' ],
+			'blueodin_email' => [],
+			'checkout'       => [ 'logged_in_user', 'form_submit', 'blueodin_email' ],
+			'form_submit'    => [],
+			'logged_in_user' => [ 'form_submit', 'blueodin_email' ],
+		];
+
+		if ( ! array_key_exists( $this->email_source, $cannot_override ) ) {
+			_doing_it_wrong( 'BlueOdinSession::should_update_email', 'unknown email source', '1.0.0' );
+		}
+
+		return ! ( in_array( $new_source, $cannot_override[ $this->email_source ] ) );
+
 	}
 
 

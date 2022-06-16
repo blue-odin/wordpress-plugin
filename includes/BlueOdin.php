@@ -157,8 +157,9 @@ final class BlueOdin {
 		$session = BlueOdinSession::load( $this->loader );
 
 		VersionRestRoute::load( $this->loader, $this->get_version() );
-		CaptureEmailFromParameters::load($this->loader, $session);
-		CaptureEmailFromCheckoutForm::load($this->loader, $session, $this->get_version());
+		CaptureEmailFromParameters::load( $this->loader, $session );
+		CaptureEmailFromCheckoutForm::load( $this->loader, $session, $this->get_version() );
+		CaptureEmailFromLogin::load( $this->loader, $session );
 		BlueOdinUTMTracking::load( $this->loader, $session );
 		BlueOdinAbandonedCart::load( $this->loader, $session );
 		BlueOdinCartWebhook::load( $this->loader );
