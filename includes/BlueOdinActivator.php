@@ -3,7 +3,7 @@
 namespace BlueOdin\WordPress;
 
 use BlueOdin\WordPress\upgrades\CreateInitialDatabase;
-use wpdb;
+use WP_Site;
 
 /**
  * Fired during plugin activation
@@ -62,11 +62,30 @@ final class BlueOdinActivator {
 	}
 
 	/**
+	 * Handle activating for new sites
+	 *
+	 * @param WP_Site $new_site
+	 * @param array $args
+	 *
+	 * @return void
+	 */
+	public function action_wp_initialize_site( WP_Site $new_site, array $args ): void
+	{
+
+		if ( ! is_plugin_active_for_network( 'blueodin-plugin/blueodin-plugin.php' ) ) {
+			return;
+		}
+		switch_to_blog( $new_site->id );
+		self::activate_site();
+		restore_current_blog();
+	}
+
+
+	/**
 	 * @return void
 	 */
 	private static function activate_site(): void
 	{
-		blueodin_write_log( "activating for " . get_current_blog_id());
 		self::update_database();
 	}
 
@@ -111,8 +130,4 @@ final class BlueOdinActivator {
 
 		return $update_option;
 	}
-
-
-
-
 }

@@ -39,6 +39,7 @@ if ( ! defined( 'WPINC' ) ) {
 const BLUE_ODIN_VERSION = '1.0.0';
 
 register_activation_hook( __FILE__, '\BlueOdin\WordPress\BlueOdinActivator::activate' );
+add_action( 'wp_initialize_site', '\BlueOdin\WordPress\BlueOdinActivator::action_wp_initialize_site', 10, 2);
 register_deactivation_hook( __FILE__, '\BlueOdin\WordPress\BlueOdinDeactivator::deactivate' );
 register_uninstall_hook( __FILE__, '\BlueOdin\WordPress\BlueOdinUninstaller::uninstall' );
 
