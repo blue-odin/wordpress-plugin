@@ -2,6 +2,8 @@
 
 namespace BlueOdin\WordPress;
 
+use function get_site;
+
 /**
  * Fired during plugin deactivation
  *
@@ -31,23 +33,31 @@ final class BlueOdinDeactivator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function deactivate(): void {
-		//self::drop_all_tables();
+	public static function deactivate(bool $network_wide): void {
+		global $wpdb;
+
+		$is_single_site = ! ( function_exists( 'is_multisite' ) && is_multisite() && $network_wide );
+		if ( $is_single_site ) {
+			self::deactivate_site();
+
+			return;
+		}
+
+		// Get all blog ids
+		$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+		foreach ( $blog_ids as $blog_id ) {
+			switch_to_blog( $blog_id );
+			self::deactivate_site();
+			restore_current_blog();
+		}
 	}
 
-	private static function drop_all_tables()
+	/**
+	 * @return void
+	 */
+	private static function deactivate_site(): void
 	{
-		global $wpdb;
-		$tables = [
-			$wpdb->prefix . "bo_sessions",
-			$wpdb->prefix . "bo_carts",
-			$wpdb->prefix . "bo_cart_items",
-			$wpdb->prefix . "bo_utm_data",
-		];
-
-		foreach ($tables as $tablename) {
-			$wpdb->query("DROP TABLE IF EXISTS $tablename");
-		}
+		blueodin_write_log( "deactivating for " . get_current_blog_id());
 	}
 
 }

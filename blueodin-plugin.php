@@ -38,23 +38,9 @@ if ( ! defined( 'WPINC' ) ) {
  */
 const BLUE_ODIN_VERSION = '1.0.0';
 
-/**
- * The code that runs during plugin activation.
- */
-function activate_blue_odin() {
-	BlueOdinActivator::activate();
-}
-
-/**
- * The code that runs during plugin deactivation.
- * This action is documented in includes/class-plugin-name-deactivator.php
- */
-function deactivate_blue_odin() {
-	BlueOdinDeactivator::deactivate();
-}
-
-register_activation_hook( __FILE__, 'activate_blue_odin' );
-register_deactivation_hook( __FILE__, 'deactivate_blue_odin' );
+register_activation_hook( __FILE__, '\BlueOdin\WordPress\BlueOdinActivator::activate' );
+register_deactivation_hook( __FILE__, '\BlueOdin\WordPress\BlueOdinDeactivator::deactivate' );
+register_uninstall_hook( __FILE__, '\BlueOdin\WordPress\BlueOdinUninstaller::uninstall' );
 
 require plugin_dir_path( __FILE__ ) . 'includes/functions.php';
 

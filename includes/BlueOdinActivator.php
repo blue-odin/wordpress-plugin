@@ -1,6 +1,8 @@
 <?php
+
 namespace BlueOdin\WordPress;
 
+use BlueOdin\WordPress\upgrades\CreateInitialDatabase;
 use wpdb;
 
 /**
@@ -26,7 +28,9 @@ use wpdb;
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
 final class BlueOdinActivator {
-	const DB_VERSION = "1.0";
+
+	const DB_VERSION_OPTION = 'blueodin_db_version';
+	const DB_UPGRADE_FAILED_OPTION = 'blueodin_upgrade_failed';
 
 	/**
 	 * Short Description. (use period)
@@ -35,112 +39,80 @@ final class BlueOdinActivator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static function activate(): void {
-		self::create_database();
-	}
+	public static function activate( bool $network_wide ): void
+	{
 
-	private static function create_database (): void {
 		global $wpdb;
-		$charset_collate = $wpdb->get_charset_collate();
 
-		self::create_bo_utm_data( $wpdb, $charset_collate );
-		self::create_bo_carts($wpdb, $charset_collate);
-		self::create_bo_cart_items($wpdb, $charset_collate);
-		self::create_bo_sessions($wpdb, $charset_collate);
+		$is_single_site = ! ( function_exists( 'is_multisite' ) && is_multisite() && $network_wide );
+		if ( $is_single_site ) {
+			self::activate_site();
 
-		add_option( "bo_db_version", self::DB_VERSION );
+			return;
+		}
+
+		// Get all blog ids
+		$blog_ids = $wpdb->get_col( "SELECT blog_id FROM $wpdb->blogs" );
+		foreach ( $blog_ids as $blog_id ) {
+			switch_to_blog( $blog_id );
+			self::activate_site();
+			restore_current_blog();
+		}
+
 	}
 
 	/**
-	 * @param wpdb $wpdb
-	 * @param string $charset_collate
-	 *
 	 * @return void
 	 */
-	private static function create_bo_utm_data( wpdb $wpdb, string  $charset_collate ): void {
-		$table_name = $wpdb->prefix . "bo_utm_data";
-
-		$sql = "CREATE TABLE $table_name (
-                    id mediumint(9) NOT NULL AUTO_INCREMENT,
-                    time datetime DEFAULT now() NOT NULL,
-                    session_id char(36) NOT NULL,
-                    name tinytext NOT NULL,
-                    value text NOT NULL,
-                    PRIMARY KEY  (id),
-                    UNIQUE KEY utm_data_name_session (name(50), session_id)
-                ) $charset_collate;";
-
-		dbDelta( $sql );
+	private static function activate_site(): void
+	{
+		blueodin_write_log( "activating for " . get_current_blog_id());
+		self::update_database();
 	}
+
+	private static function update_database(): bool
+	{
+		$success = true;
+
+		$success &= self::do_upgrade( 1, new CreateInitialDatabase() );
+
+		update_option( self::DB_UPGRADE_FAILED_OPTION, ! $success );
+
+		return (bool) $success;
+	}
+
 
 	/**
-	 * @param wpdb $wpdb
-	 * @param $charset_collate
 	 *
-	 * @return void
+	 * @param int $version
+	 * @param callable|string $function
+	 *
+	 * @return bool
 	 */
-	private static function create_bo_carts( wpdb $wpdb, $charset_collate ): void {
-		$table_name = $wpdb->prefix . "bo_carts";
-		$unique_key_session_id = $wpdb->prefix . 'cart_session_id';
+	private static function do_upgrade( int $version, $function ): bool
+	{
+		$current_version = (int) get_option( self::DB_VERSION_OPTION, 0 );
 
-		$sql = "CREATE TABLE $table_name (
-                    id mediumint(9) NOT NULL AUTO_INCREMENT,
-                    time datetime DEFAULT now() NOT NULL,
-                    session_id tinytext NOT NULL,
-                    user_id mediumint(11),
-                    ip_address tinytext NOT NULL,
-                    order_id mediumint(11),
-                    PRIMARY KEY  (id)
-                ) $charset_collate;";
+		if ( ( $version - 1 ) > $current_version ) {
+			return false;
+		}
 
-		dbDelta( $sql );
+		if ( $version <= $current_version ) {
+			return true;
+		}
+
+		blueodin_write_log( "Upgrading DB from '$current_version' to '$version'" );
+
+		$update_option = call_user_func( $function );
+
+		if ( $update_option ) {
+			update_option( self::DB_VERSION_OPTION, $version );
+		}
+
+		return $update_option;
 	}
 
-	/**
-	 * @param wpdb $wpdb
-	 * @param string $charset_collate
-	 *
-	 * @return void
-	 */
-	private static function create_bo_cart_items( wpdb $wpdb, string $charset_collate ): void {
-		$table_name = $wpdb->prefix . "bo_cart_items";
-		$unique_key_cart_id_item_key = $wpdb->prefix . 'cart_items_cart_id_item_key';
 
-		$sql = "CREATE TABLE $table_name (
-                    id mediumint(9) NOT NULL AUTO_INCREMENT,
-                    cart_id mediumint(9) NOT NULL,
-                    item_key varchar(32) NOT NULL,
-                    product_id mediumint(9) NOT NULL,
-                    quantity smallint NOT NULL,
-                    PRIMARY KEY  (id),
-                   UNIQUE KEY $unique_key_cart_id_item_key (cart_id, item_key)
-                ) $charset_collate;";
 
-		dbDelta( $sql );
-	}
 
-	/**
-	 * @param wpdb $wpdb
-	 * @param string $charset_collate
-	 *
-	 * @return void
-	 */
-	private static function create_bo_sessions( wpdb $wpdb, string $charset_collate ): void {
-		$table_name = $wpdb->prefix . "bo_sessions";
-		$unique_key_session_id = $wpdb->prefix . 'sessions_session_id';
-
-		$sql = "CREATE TABLE $table_name (
-                    id mediumint(9) NOT NULL AUTO_INCREMENT,
-                    created_at datetime DEFAULT now() NOT NULL,
-                    last_seen datetime DEFAULT now(),
-                    session_id char(36) NOT NULL,
-				    current_cart_id mediumint,
-				    email varchar(255),
-				    email_source varchar(255),
-                    PRIMARY KEY  (id),
-                   UNIQUE KEY $unique_key_session_id (session_id)
-                ) $charset_collate;";
-
-		dbDelta( $sql );
-	}
 }
