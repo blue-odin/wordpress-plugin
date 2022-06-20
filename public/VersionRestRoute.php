@@ -4,7 +4,7 @@ namespace BlueOdin\WordPress;
 /**
  * The public-facing functionality of the plugin.
  *
- * @link       http://example.com
+ * @link       https://blueodin.io
  * @since      1.0.0
  *
  * @package    BlueOdin
@@ -19,7 +19,7 @@ namespace BlueOdin\WordPress;
  *
  * @package    BlueOdin
  * @subpackage BlueOdin/public
- * @author     Your Name <email@example.com>
+ * @author     Blue Odin <support@blueodin.io>
  */
 final class VersionRestRoute {
 

@@ -5,7 +5,7 @@ namespace BlueOdin\WordPress;
 /**
  * Register all actions and filters for the plugin
  *
- * @link       http://example.com
+ * @link       https://blueodin.io
  * @since      1.0.0
  *
  * @package    BlueOdin
@@ -21,7 +21,7 @@ namespace BlueOdin\WordPress;
  *
  * @package    BlueOdin
  * @subpackage BlueOdin/includes
- * @author     Your Name <email@example.com>
+ * @author     Blue Odin <support@blueodin.io>
  */
 final class BlueOdinLoader {
 

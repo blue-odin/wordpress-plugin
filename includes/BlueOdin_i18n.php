@@ -8,7 +8,7 @@ namespace BlueOdin\WordPress;
  * Loads and defines the internationalization files for this plugin
  * so that it is ready for translation.
  *
- * @link       http://example.com
+ * @link       https://blueodin.io
  * @since      1.0.0
  *
  * @package    BlueOdin
@@ -24,7 +24,7 @@ namespace BlueOdin\WordPress;
  * @since      1.0.0
  * @package    BlueOdin
  * @subpackage BlueOdin/includes
- * @author     Your Name <email@example.com>
+ * @author     Blue Odin <support@blueodin.io>>
  */
 final class BlueOdin_i18n {
 

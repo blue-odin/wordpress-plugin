@@ -10,7 +10,7 @@ use BlueOdin\WordPress\Admin\BlueOdinAdmin;
  * A class definition that includes attributes and functions used across both the
  * public-facing side of the site and the admin area.
  *
- * @link       http://example.com
+ * @link       https://blueodin.io
  * @since      1.0.0
  *
  * @package    BlueOdin
@@ -29,7 +29,7 @@ use BlueOdin\WordPress\Admin\BlueOdinAdmin;
  * @since      1.0.0
  * @package    BlueOdin
  * @subpackage BlueOdin/includes
- * @author     Your Name <email@example.com>
+ * @author     Blue Odin <support@blueodin.io>
  */
 final class BlueOdin {
 	const NONCE_VALUE = 'blueodin_nonce_value';

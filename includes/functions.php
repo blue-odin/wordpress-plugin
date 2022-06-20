@@ -1,5 +1,7 @@
 <?php
 
+defined( 'ABSPATH' ) OR exit;
+
 if ( ! function_exists('blueodin_write_log')) {
    function blueodin_write_log ( $message, $data = null )  {
 	   if (is_null($data)) {

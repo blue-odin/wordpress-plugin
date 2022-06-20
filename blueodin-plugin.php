@@ -1,15 +1,15 @@
 <?php
 
 /*
- * Plugin Name: Blueodin Plugin
+ * Plugin Name: Blueodin Companion
  * Plugin URI: https://www.blueodin.io/plugin
- * Description: Plugin to add extra functionality to BlueOdin.
+ * Description: Plugin to add extra functionality to Blue Odin.
  * Version: 1.0
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author: Blue Odin
  * Author URI: http://www.blueodin.io
- * License: A "Slug" license name e.g. GPL2
+ * License: GPL2
  * WC requires at least: 3.0.0
  * WC tested up to: 6.5.1
 */
@@ -21,20 +21,14 @@ require_once dirname(__FILE__)."/vendor/autoload.php";
  * admin-specific hooks, and public-facing site hooks.
  */
 use BlueOdin\WordPress\BlueOdin;
-use BlueOdin\WordPress\BlueOdinActivator;
-use BlueOdin\WordPress\BlueOdinDeactivator;
 
 // If this file is called directly, abort.
-
-
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
  * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
  */
 const BLUE_ODIN_VERSION = '1.0.0';
 

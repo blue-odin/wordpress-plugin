@@ -7,7 +7,7 @@ use function get_site;
 /**
  * Fired during plugin deactivation
  *
- * @link       http://example.com
+ * @link       https://blueodin.io
  * @since      1.0.0
  *
  * @package    BlueOdin
@@ -22,7 +22,7 @@ use function get_site;
  * @since      1.0.0
  * @package    BlueOdin
  * @subpackage BlueOdin/includes
- * @author     Your Name <email@example.com>
+ * @author     Blue Odin <support@blueodin.io>
  */
 final class BlueOdinDeactivator {
 
@@ -57,7 +57,7 @@ final class BlueOdinDeactivator {
 	 */
 	private static function deactivate_site(): void
 	{
-		blueodin_write_log( "deactivating for " . get_current_blog_id());
+		//blueodin_write_log( "deactivating for " . get_current_blog_id());
 	}
 
 }

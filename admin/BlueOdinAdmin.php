@@ -5,7 +5,7 @@ namespace BlueOdin\WordPress\Admin;
 /**
  * The admin-specific functionality of the plugin.
  *
- * @link       http://example.com
+ * @link       https://blueodin.io
  * @since      1.0.0
  *
  * @package    BlueOdin
@@ -20,7 +20,7 @@ namespace BlueOdin\WordPress\Admin;
  *
  * @package    BlueOdin
  * @subpackage BlueOdin/admin
- * @author     Your Name <email@example.com>
+ * @author     Blue Odin <support@blueodin.io>
  */
 final class BlueOdinAdmin {
 

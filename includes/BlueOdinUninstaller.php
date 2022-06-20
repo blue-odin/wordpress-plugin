@@ -5,7 +5,7 @@ namespace BlueOdin\WordPress;
 /**
  * Fired during plugin deactivation
  *
- * @link       http://example.com
+ * @link       https://blueodin.io
  * @since      1.0.0
  *
  * @package    BlueOdin
@@ -20,7 +20,7 @@ namespace BlueOdin\WordPress;
  * @since      1.0.0
  * @package    BlueOdin
  * @subpackage BlueOdin/includes
- * @author     Your Name <email@example.com>
+ * @author     Blue Odin <support@blueodin.io>
  */
 final class BlueOdinUninstaller {
 
@@ -77,7 +77,7 @@ final class BlueOdinUninstaller {
 	 */
 	private static function uninstall_site(): void
 	{
-		blueodin_write_log( "uninstalling for " .  get_current_blog_id());
+		//blueodin_write_log( "uninstalling for " .  get_current_blog_id());
 
 		if ( ! get_option( 'blueodin_do_uninstall', false ) ) {
 			return;

@@ -8,7 +8,7 @@ use WP_Site;
 /**
  * Fired during plugin activation
  *
- * @link       http://example.com
+ * @link       https://blueodin.io
  * @since      1.0.0
  *
  * @package    BlueOdin
@@ -23,7 +23,7 @@ use WP_Site;
  * @since      1.0.0
  * @package    BlueOdin
  * @subpackage BlueOdin/includes
- * @author     Your Name <email@example.com>
+ * @author     Blue Odin <support@blueodin.io>
  */
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
