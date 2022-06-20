@@ -182,6 +182,13 @@ final class BlueOdinSession {
 		$data = $wpdb->get_row( $sql );
 		//blueodin_write_log( "BlueOdinSession::get_email", [ 'return' => $data ] );
 
+		if (!$data) {
+			$data = (object) [
+				'email'  => null,
+				'source' => null,
+			];
+		}
+
 		$this->email        = $data->email;
 		$this->email_source = $data->source;
 		$this->loaded       = true;
