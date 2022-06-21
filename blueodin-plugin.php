@@ -4,7 +4,7 @@
  * Plugin Name: Blueodin Companion
  * Plugin URI: https://www.blueodin.io/plugin
  * Description: Plugin to add extra functionality to Blue Odin.
- * Version: 1.0
+ * Version: 1.0.0
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author: Blue Odin
