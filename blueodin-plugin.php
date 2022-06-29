@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Plugin Name: Blueodin Companion
+ * Plugin Name: Blueodin
  * Plugin URI: https://www.blueodin.io/plugin
  * Description: Plugin to add extra functionality to Blue Odin.
  * Version: 1.0.0
