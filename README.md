@@ -5,6 +5,11 @@
 
     ./composer.sh dump-autoload
 
-## Packaing the plugin
+## Deploying to wordpress.org
 
-    ./package.sh
+1. Push to github (into the main branch)
+
+    git push github master:main
+
+2. Create a new release (with the release number matching the version number). This will automatically 
+   deploy the plugin to wordpress.org's Subversion repository.

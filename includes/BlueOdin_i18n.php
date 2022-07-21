@@ -27,6 +27,7 @@ namespace BlueOdin\WordPress;
  * @author     Blue Odin <support@blueodin.io>>
  */
 final class BlueOdin_i18n {
+	public const TEXTDOMAIN = 'blueodin';
 
 
 	/**
@@ -37,7 +38,7 @@ final class BlueOdin_i18n {
 	public function load_plugin_textdomain(): void {
 
 		load_plugin_textdomain(
-			'blueodin',
+			self::TEXTDOMAIN,
 			false,
 			dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/'
 		);

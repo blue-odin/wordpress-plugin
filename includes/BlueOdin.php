@@ -3,6 +3,7 @@
 namespace BlueOdin\WordPress;
 
 use BlueOdin\WordPress\Admin\BlueOdinAdmin;
+use BlueOdin\WordPress\Admin\CostOfGoods;
 
 /**
  * The file that defines the core plugin class
@@ -141,6 +142,8 @@ final class BlueOdin {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+
+		CostOfGoods::load($this->loader);
 
 	}
 
