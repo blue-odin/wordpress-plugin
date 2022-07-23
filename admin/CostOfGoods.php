@@ -5,6 +5,7 @@ namespace BlueOdin\WordPress\Admin;
 use BlueOdin\WordPress\BlueOdin_i18n;
 use BlueOdin\WordPress\BlueOdinLoader;
 use WC_Order;
+use WC_Product;
 
 final class CostOfGoods {
 
@@ -21,10 +22,22 @@ final class CostOfGoods {
 	public static function load( BlueOdinLoader $loader ): self
 	{
 		$cost_of_goods = new CostOfGoods();
+
+		// Add the meta box to the product edit page
 		$loader->add_action( 'woocommerce_product_options_pricing', $cost_of_goods, 'action_woocommerce_product_options_pricing' );
 		$loader->add_action( 'woocommerce_process_product_meta', $cost_of_goods, 'action_woocommerce_process_product_meta', 10, 2 );
+
+		// Update the cost of goods when an order is created
 		$loader->add_action( 'woocommerce_checkout_update_order_meta', $cost_of_goods, 'action_woocommerce_checkout_update_order_meta', 10, 1 );
+
+		// Don't display the COG cost on the order edit page.
 		$loader->add_filter( 'woocommerce_hidden_order_itemmeta', $cost_of_goods, 'filter_woocommerce_hidden_order_itemmeta' );
+
+		// Add the COG to the product table
+		$loader->add_filter( 'manage_edit-product_columns', $cost_of_goods, 'filter_manage_edit_product_columns', 11 );
+		$loader->add_action( 'manage_product_posts_custom_column', $cost_of_goods, 'action_manage_product_posts_custom_column', 11 );
+		$loader->add_filter( 'manage_edit-product_sortable_columns', $cost_of_goods, 'filter_manage_edit_product_sortable_columns', 11 );
+		$loader->add_filter( 'request', $cost_of_goods, 'filter_request', 11 );
 
 		return $cost_of_goods;
 	}
@@ -75,7 +88,7 @@ final class CostOfGoods {
 			}
 
 			$product_id = ( ! empty( $item['variation_id'] ) ) ? $item['variation_id'] : $item['product_id'];
-			$item_cost  = $this->get_cost( $product_id );
+			$item_cost  = $this->get_cost_by_id( $product_id );
 			$quantity   = $item->get_quantity();
 
 			$this->set_item_cost_meta( $item_id, $item_cost, $quantity );
@@ -97,9 +110,8 @@ final class CostOfGoods {
 	 * @param int $product_id product id
 	 *
 	 * @return float product cost if configured, the empty string otherwise
-	 * @since 1.1
 	 */
-	public function get_cost( int $product_id ): float
+	public function get_cost_by_id( int $product_id ): ?float
 	{
 		$product = wc_get_product( $product_id );
 
@@ -107,8 +119,42 @@ final class CostOfGoods {
 			return 0.0;
 		}
 
-		return $product->get_meta( self::META_KEY, true, 'edit' );
+		return $this->get_cost( $product );
 	}
+
+	/**
+	 * Returns the product cost, if any
+	 *
+	 * @param WC_Product $product
+	 *
+	 * @return float product cost if configured, the empty string otherwise
+	 */
+	public function get_cost( WC_Product $product ): ?float
+	{
+		$cost = $product->get_meta( self::META_KEY, true, 'edit' );
+
+		return is_numeric( $cost ) ? $cost : null;
+	}
+
+	/**
+	 * Returns the product cost html, if any
+	 *
+	 * @param WC_Product $product the product or product id
+	 *
+	 * @return string product cost markup
+	 * @since 1.1
+	 */
+	public function get_cost_html( WC_Product $product ): ?string
+	{
+		$cost = $this->get_cost( $product );
+
+		if (! $cost ) {
+			return null;
+		}
+
+		return wc_price( $cost );
+	}
+
 
 	/**
 	 * Sets an order item's cost meta.
@@ -139,5 +185,121 @@ final class CostOfGoods {
 	{
 		return array_merge( $hidden_fields, [ self::WC_COG_ITEM_COST, self::WC_COG_ITEM_TOTAL_COST ] );
 	}
+
+	/**
+	 * Adds a "Cost" column header after the core "Price" one, on the Products
+	 * list table
+	 *
+	 * @param array $existing_columns associative array of column key to name
+	 *
+	 * @return array associative array of column key to name
+	 */
+	public function filter_manage_edit_product_columns( array $existing_columns ): array
+	{
+
+		$columns = [];
+
+		foreach ( $existing_columns as $key => $value ) {
+
+			$columns[ $key ] = $value;
+
+			if ( 'price' === $key ) {
+				$columns['cost'] = __( 'Cost', BlueOdin_i18n::TEXTDOMAIN );
+			}
+		}
+
+		return $columns;
+	}
+
+	/**
+	 * Renders the product cost value in the products list table
+	 *
+	 * @param string $column column id
+	 *
+	 * @since 1.1
+	 */
+	public function action_manage_product_posts_custom_column( string $column ): void
+	{
+		if ( 'cost' !== $column ) {
+			return;
+		}
+
+		/* @type \WC_Product $the_product */
+		global $post, $the_product;
+
+		if ( ! $the_product instanceof \WC_Product || $the_product->get_id() !== $post->ID ) {
+			$the_product = wc_get_product( $post );
+		}
+
+		if ( $this->get_cost_html( $the_product ) ) {
+			echo $this->get_cost_html( $the_product );
+		} else {
+			echo '<span class="na">&ndash;</span>';
+		}
+	}
+
+	/**
+	 * Add the "Cost" column to the list of sortable columns
+	 *
+	 * @param array $columns associative array of sortable columns, id to id
+	 *
+	 * @return array sortable columns
+	 *
+	 */
+	public function filter_manage_edit_product_sortable_columns( array $columns ): array
+	{
+
+		$columns['cost'] = 'cost';
+
+		return $columns;
+	}
+
+	/**
+	 * Add the "Cost" column to the orderby clause if sorting by cost
+	 *
+	 * @param array $vars query vars
+	 *
+	 * @return array query vars
+	 */
+	public function filter_request( array $vars ): array
+	{
+
+		if ( ! isset( $vars['order_by'] ) || 'cost' !== $vars['order_by'] ) {
+			return $vars;
+		}
+
+		$order = strtoupper( $vars['order'] ?? 'DESC' );
+
+		// place the products with no cost at the top or the bottom of the list, depending on chosen sort order
+		if ( 'ASC' === $order ) {
+			$order_by = [
+				'cost_of_goods_not_set' => 'ASC',
+				'cost_of_goods'         => 'ASC',
+			];
+		} else {
+			$order_by = [
+				'cost_of_goods_not_set' => 'DESC',
+				'cost_of_goods'         => 'DESC',
+			];
+		}
+
+		return array_merge( $vars, [
+			'order_by'   => $order_by,
+			'meta_query' => [
+				'relation'              => 'OR',
+				'cost_of_goods'         => [
+					'key'     => '_wc_cog_cost',
+					'compare' => 'EXISTS',
+					'type'    => 'NUMERIC',
+				],
+				'cost_of_goods_not_set' => [
+					'key'     => '_wc_cog_cost',
+					'compare' => 'NOT EXISTS',
+					'type'    => 'NUMERIC',
+				],
+			]
+		] );
+	}
+
 
 }
